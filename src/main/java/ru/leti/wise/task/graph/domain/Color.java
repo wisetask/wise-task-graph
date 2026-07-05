@@ -5,5 +5,5 @@ public enum Color {
     GRAY,
     BLUE,
     GREEN,
-    COLOR_UNSPECIFIED
+    UNRECOGNIZED
 }

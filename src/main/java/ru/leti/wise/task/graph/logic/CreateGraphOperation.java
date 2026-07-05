@@ -7,6 +7,7 @@ import reactor.core.publisher.Mono;
 import ru.leti.wise.task.graph.GraphGrpc;
 import ru.leti.wise.task.graph.GraphGrpc.CreateGraphResponse;
 import ru.leti.wise.task.graph.GraphOuterClass;
+import ru.leti.wise.task.graph.domain.Graph;
 import ru.leti.wise.task.graph.mapper.GraphMapper;
 import ru.leti.wise.task.graph.repository.GraphRepository;
 
@@ -20,7 +21,10 @@ public class CreateGraphOperation {
 
     public Mono<CreateGraphResponse> activate(GraphGrpc.CreateGraphRequest request) {
         GraphOuterClass.Graph graph = request.getGraph();
-        return graphRepository.save(graphMapper.graphRequestToGraph(graph))
+        log.info("Mapped gRPC input: isNamed={}, name={}", graph.getIsNamed(), graph.getName());
+        Graph baseGraph = graphMapper.graphRequestToGraph(graph);
+        log.info("Mapped gRPC input: isNamed={}, name={}", baseGraph.getIsNamed(), baseGraph.getName());
+        return graphRepository.save(baseGraph)
                 .map((__) -> CreateGraphResponse
                         .newBuilder()
                         .setGraph(graph)

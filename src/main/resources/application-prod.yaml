@@ -3,19 +3,22 @@ spring:
     name: wise-task-graph
   data:
     mongodb:
-      host: wise-task-mongo
-      port: 27017
-      database: wise_task_graph
+      host: ${MONGO_APP_NAME}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB}
 
 server:
-  port: 8080
+  port: ${GRAPH_PORT}
 
 grpc:
-  port: 6565
+  port: ${GRAPH_GRPC_PORT}
 
 logging:
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+  level:
+    ru.leti.wise.task.graph: INFO
+    org.springframework.web: INFO
 
 management:
   tracing:
@@ -35,4 +38,4 @@ management:
             requests: true
   zipkin:
     tracing:
-      endpoint: http://${TEMPO_HOST:localhost}:${TEMPO_PORT:9411}/api/v2/spans
+      endpoint: http://${TEMPO_HOST}:${TEMPO_PORT}/api/v2/spans

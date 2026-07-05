@@ -4,12 +4,9 @@ WORKDIR /src
 ARG USERNAME
 ARG TOKEN
 
-RUN USERNAME=$USERNAME TOKEN=$TOKEN gradle build --no-daemon
+RUN USERNAME=$USERNAME TOKEN=$TOKEN gradle build --no-daemon --stacktrace
 
 FROM eclipse-temurin:17-jre
-
-EXPOSE 6565
-EXPOSE 8080
 
 RUN mkdir /app
 

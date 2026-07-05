@@ -11,6 +11,7 @@ import ru.leti.wise.task.graph.domain.Graph;
 import ru.leti.wise.task.graph.mapper.GraphMapper;
 import ru.leti.wise.task.graph.repository.GraphRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -21,13 +22,14 @@ public class IsOwnerGraphOperation {
     private final GraphRepository graphRepository;
 
     public Mono<GraphGrpc.IsOwnerGraphResponse> activate(IsOwnerGraphRequest request) {
-        String userId = request.getUserId();
         return graphRepository.findById(UUID.fromString(request.getGraphId()))
-                .map(graph -> graph.getAuthorId().equals(userId))
+                .map(graph -> {
+                    UUID authorId = graph.getAuthorId();
+                    return authorId != null && authorId.toString().equals(request.getUserId());
+                })
                 .map(this::createResponse)
                 .defaultIfEmpty(createResponse(false));
     }
-
     private GraphGrpc.IsOwnerGraphResponse createResponse(boolean isOwner) {
         return GraphGrpc.IsOwnerGraphResponse
                 .newBuilder()

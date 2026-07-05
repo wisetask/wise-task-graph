@@ -14,16 +14,6 @@ service GraphService {
   rpc removeGraph (RemoveGraphRequest) returns (RemoveGraphResponse);
 }
 
-
-message IsOwnerGraphRequest{
-  string user_id = 1;
-  string graph_id = 2;
-}
-
-message IsOwnerGraphResponse{
-  bool result = 1;
-}
-
 message GenerateGraphRequest {
   int32 vertexCount = 1;
   int32 edgeCount = 2;
@@ -33,6 +23,15 @@ message GenerateGraphRequest {
 
 message RemoveGraphRequest {
   string id = 1;
+}
+
+message IsOwnerGraphRequest{
+  string user_id = 1;
+  string graph_id = 2;
+}
+
+message IsOwnerGraphResponse{
+  bool result = 1;
 }
 
 message RemoveGraphResponse {

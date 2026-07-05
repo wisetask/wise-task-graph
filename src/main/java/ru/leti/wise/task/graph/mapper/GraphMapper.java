@@ -3,9 +3,11 @@ package ru.leti.wise.task.graph.mapper;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import ru.leti.wise.task.graph.GraphOuterClass;
-import ru.leti.wise.task.graph.domain.*;
+import ru.leti.wise.task.graph.domain.Color;
+import ru.leti.wise.task.graph.domain.Edge;
+import ru.leti.wise.task.graph.domain.Graph;
+import ru.leti.wise.task.graph.domain.Vertex;
 
 import java.util.List;
 import java.util.UUID;
