@@ -50,8 +50,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            USERNAME=${{ github.actor }}
+            USERNAME=${{ vars.USERNAME }}
             TOKEN=${{ secrets.WISE_TASK_LIBRARY }}
         env:
-          USERNAME: ${{ github.actor }}
+          USERNAME: ${{ vars.USERNAME }}
           TOKEN: ${{ secrets.WISE_TASK_LIBRARY }}
