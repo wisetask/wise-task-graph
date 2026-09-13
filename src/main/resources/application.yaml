@@ -4,20 +4,17 @@ spring:
   threads:
     virtual:
       enabled: true
-  data:
-    mongodb:
-      host: ${MONGO_APP_NAME:wise-task-mongo}
-      port: ${MONGO_PORT:27017}
-      database: ${MONGO_DB:wise_task_graph}
+  mongodb:
+    host: ${MONGO_DB:wise-task-mongo}
+    port: ${MONGO_PORT:27017}
+    database: ${GRAPH_DB:wise_task_graph}
   grpc:
     server:
       port: ${GRAPH_GRPC_PORT:6565}
 
-
 logging:
   level:
     ru.leti.wise.task.plugin: ${LOGGING_LEVEL:INFO}
-
 
 management:
   tracing:
