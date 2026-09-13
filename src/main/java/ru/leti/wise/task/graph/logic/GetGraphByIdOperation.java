@@ -1,10 +1,10 @@
 package ru.leti.wise.task.graph.logic;
 
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import ru.leti.wise.task.graph.GraphGrpc;
 import ru.leti.wise.task.graph.GraphGrpc.GetGraphByIdResponse;
 import ru.leti.wise.task.graph.domain.Graph;
 import ru.leti.wise.task.graph.mapper.GraphMapper;
@@ -19,10 +19,16 @@ public class GetGraphByIdOperation {
     private final GraphMapper graphMapper;
     private final GraphRepository graphRepository;
 
-    public Mono<GetGraphByIdResponse> activate(UUID id) {
-        return graphRepository.findById(id)
+    public Mono<GetGraphByIdResponse> activate(GraphGrpc.GetGraphByIdRequest request) {
+        var graphId = UUID.fromString(request.getId());
+        return graphRepository.findById(graphId)
                 .map(this::createResponse)
-                .switchIfEmpty(Mono.error(new StatusRuntimeException(Status.NOT_FOUND)));
+                .switchIfEmpty(Mono.error(
+                                Status.NOT_FOUND
+                                        .withDescription("Граф с id '%s' не найден".formatted(graphId))
+                                        .asRuntimeException()
+                        )
+                );
     }
 
     private GetGraphByIdResponse createResponse(Graph graph) {

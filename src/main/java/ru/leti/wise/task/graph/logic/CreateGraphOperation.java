@@ -21,9 +21,7 @@ public class CreateGraphOperation {
 
     public Mono<CreateGraphResponse> activate(GraphGrpc.CreateGraphRequest request) {
         GraphOuterClass.Graph graph = request.getGraph();
-        log.info("Mapped gRPC input: isNamed={}, name={}", graph.getIsNamed(), graph.getName());
         Graph baseGraph = graphMapper.graphRequestToGraph(graph);
-        log.info("Mapped gRPC input: isNamed={}, name={}", baseGraph.getIsNamed(), baseGraph.getName());
         return graphRepository.save(baseGraph)
                 .map((__) -> CreateGraphResponse
                         .newBuilder()

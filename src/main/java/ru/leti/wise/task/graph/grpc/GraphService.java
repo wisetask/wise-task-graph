@@ -1,25 +1,22 @@
 package ru.leti.wise.task.graph.grpc;
 
 import com.google.protobuf.Empty;
+import io.grpc.stub.StreamObserver;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.lognet.springboot.grpc.GRpcService;
-import reactor.core.publisher.Mono;
+import org.springframework.grpc.server.service.GrpcService;
 import ru.leti.wise.task.graph.GraphGrpc.*;
-import ru.leti.wise.task.graph.ReactorGraphServiceGrpc;
+import ru.leti.wise.task.graph.GraphServiceGrpc;
 import ru.leti.wise.task.graph.logic.*;
-import ru.leti.wise.task.graph.util.LogGrpcInterceptor;
-
-import static java.util.UUID.fromString;
+import ru.leti.wise.task.graph.util.LogInterceptor;
 
 @Slf4j
 @Observed
-@GRpcService(interceptors = {LogGrpcInterceptor.class})
+@GrpcService(interceptors = {LogInterceptor.class})
 @RequiredArgsConstructor
-public class GraphService extends ReactorGraphServiceGrpc.GraphServiceImplBase {
+public class GraphService extends GraphServiceGrpc.GraphServiceImplBase {
 
-    private final IsOwnerGraphOperation isOwnerGraphOperation;
     private final GetGraphByIdOperation getGraphByIdOperation;
     private final CreateGraphOperation createGraphOperation;
     private final GenerateRandomGraphOperation generateRandomGraphOperation;
@@ -27,32 +24,64 @@ public class GraphService extends ReactorGraphServiceGrpc.GraphServiceImplBase {
     private final RemoveGraphOperation removeGraphOperation;
 
     @Override
-    public Mono<IsOwnerGraphResponse> isOwnerGraph(Mono<IsOwnerGraphRequest> request) {
-        return request.flatMap(isOwnerGraphOperation::activate);
+    public void getGraphById(GetGraphByIdRequest request,
+                             StreamObserver<GetGraphByIdResponse> responseObserver) {
+        getGraphByIdOperation
+                .activate(request)
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
     }
 
     @Override
-    public Mono<GetGraphByIdResponse> getGraphById(Mono<GetGraphByIdRequest> request) {
-        return request.flatMap(req -> getGraphByIdOperation.activate(fromString(req.getId())));
+    public void createGraph(CreateGraphRequest request,
+                            StreamObserver<CreateGraphResponse> responseObserver) {
+        createGraphOperation
+                .activate(request)
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
     }
 
     @Override
-    public Mono<CreateGraphResponse> createGraph(Mono<CreateGraphRequest> request) {
-        return request.flatMap(createGraphOperation::activate);
+    public void generateRandomGraph(GenerateGraphRequest request,
+                                    StreamObserver<GenerateGraphResponse> responseObserver) {
+        generateRandomGraphOperation
+                .activate(request)
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
+
     }
 
     @Override
-    public Mono<GenerateGraphResponse> generateRandomGraph(Mono<GenerateGraphRequest> request) {
-        return request.flatMap(generateRandomGraphOperation::activate);
+    public void getGraphLibrary(Empty request,
+                                StreamObserver<GetGraphLibraryResponse> responseObserver) {
+        getGraphLibraryOperation
+                .activate()
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
+
     }
 
     @Override
-    public Mono<GetGraphLibraryResponse> getGraphLibrary(Mono<Empty> request) {
-        return request.flatMap((__) -> getGraphLibraryOperation.activate());
-    }
-
-    @Override
-    public Mono<RemoveGraphResponse> removeGraph(Mono<RemoveGraphRequest> request) {
-        return request.flatMap(removeGraphOperation::activate);
+    public void removeGraph(RemoveGraphRequest request,
+                            StreamObserver<RemoveGraphResponse> responseObserver) {
+        removeGraphOperation
+                .activate(request)
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
     }
 }

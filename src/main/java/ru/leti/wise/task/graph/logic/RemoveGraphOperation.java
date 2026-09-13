@@ -14,7 +14,6 @@ public class RemoveGraphOperation {
 
     private final GraphRepository graphRepository;
 
-
     public Mono<GraphGrpc.RemoveGraphResponse> activate(GraphGrpc.RemoveGraphRequest removeGraphRequest) {
         return graphRepository.deleteById(UUID.fromString(removeGraphRequest.getId()))
                 .thenReturn(GraphGrpc.RemoveGraphResponse.newBuilder().setId(removeGraphRequest.getId()).build());
