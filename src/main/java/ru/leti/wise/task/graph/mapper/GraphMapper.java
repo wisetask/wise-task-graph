@@ -3,6 +3,7 @@ package ru.leti.wise.task.graph.mapper;
 import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import ru.leti.wise.task.graph.GraphOuterClass;
 import ru.leti.wise.task.graph.domain.Color;
 import ru.leti.wise.task.graph.domain.Edge;
@@ -17,6 +18,8 @@ import java.util.UUID;
         collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED)
 public interface GraphMapper {
 
+    @Mapping(target = "vertexListList", source = "vertexList")
+    @Mapping(target = "edgeListList", source = "edgeList")
     GraphOuterClass.Graph graphToGraphResponse(Graph graph);
 
     @Mapping(target = "XCoordinate", source = "xCoordinate")
@@ -25,6 +28,10 @@ public interface GraphMapper {
 
     GraphOuterClass.Edge edgeToEdgeResponse(Edge edge);
 
+    @Mapping(target = "id", source = "id", qualifiedByName = "toUuid")
+    @Mapping(target = "authorId", source = "authorId", qualifiedByName = "toUuid")
+    @Mapping(target = "vertexList", source = "vertexListList")
+    @Mapping(target = "edgeList", source = "edgeListList")
     Graph graphRequestToGraph(GraphOuterClass.Graph graph);
 
     List<GraphOuterClass.Graph> toGraphs(List<Graph> graphs);
@@ -36,12 +43,19 @@ public interface GraphMapper {
     Edge edgeRequestToEdge(GraphOuterClass.Edge edge);
 
     @Mapping(target = "isDirect", source = "graph.direct")
+    @Mapping(target = "vertexListList", source = "graph.vertexList")
+    @Mapping(target = "edgeListList", source = "graph.edgeList")
     @Mapping(target = ".", source = "graph")
     GraphOuterClass.Graph commonGraphToGraphResponse(ru.leti.wise.task.graph.model.Graph graph, UUID id);
 
     GraphOuterClass.Vertex commonVertexToVertexResponse(ru.leti.wise.task.graph.model.Vertex vertex);
 
     GraphOuterClass.Edge commonEdgeToEdgeResponse(ru.leti.wise.task.graph.model.Edge edge);
+
+    @Named("toUuid")
+    default UUID toUuid(String value) {
+        return value == null || value.isBlank() ? null : UUID.fromString(value);
+    }
 
     default GraphOuterClass.Color mapColor(Color color) {
         return GraphOuterClass.Color.valueOf(color.name());

@@ -1,6 +1,7 @@
 package ru.leti.wise.task.graph.logic;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import ru.leti.wise.task.graph.GraphGrpc.GenerateGraphRequest;
@@ -18,6 +19,7 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static java.util.concurrent.ThreadLocalRandom.current;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GenerateRandomGraphOperation {
@@ -31,10 +33,17 @@ public class GenerateRandomGraphOperation {
     private static final int MAX_COORDINATE = 1000;
 
     public Mono<GenerateGraphResponse> activate(GenerateGraphRequest request) {
+        log.debug("Generating random graph: vertexCount={}, edgeCount={}, isDirect={}, isSaved={}",
+                request.getVertexCount(), request.getEdgeCount(), request.getIsDirect(), request.getIsSaved());
         var graph = generateGraphResponse(request);
         return request.getIsSaved()
-                ? graphRepository.save(graphMapper.graphRequestToGraph(graph.getGraph())).map((__) -> graph)
-                : Mono.just(graph);
+                ? graphRepository.save(graphMapper.graphRequestToGraph(graph.getGraph()))
+                .doOnNext(saved -> log.info("Random graph saved: id={}, vertices={}, edges={}, isDirect={}",
+                        saved.getId(), saved.getVertexCount(), saved.getEdgeCount(), saved.getIsDirect()))
+                .map((__) -> graph)
+                : Mono.just(graph)
+                .doOnSuccess(generated -> log.debug("Random graph generated (not saved): id={}",
+                        generated.getGraph().getId()));
     }
 
     private GenerateGraphResponse generateGraphResponse(GenerateGraphRequest request) {

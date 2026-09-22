@@ -1,6 +1,5 @@
 package ru.leti.wise.task.graph.grpc;
 
-import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,8 @@ public class GraphService extends GraphServiceGrpc.GraphServiceImplBase {
     private final GetGraphByIdOperation getGraphByIdOperation;
     private final CreateGraphOperation createGraphOperation;
     private final GenerateRandomGraphOperation generateRandomGraphOperation;
-    private final GetGraphLibraryOperation getGraphLibraryOperation;
+    private final GetAllGraphsOperation getAllGraphsOperation;
+    private final GetGraphsByIdsOperation getGraphsByIdsOperation;
     private final RemoveGraphOperation removeGraphOperation;
 
     @Override
@@ -61,10 +61,23 @@ public class GraphService extends GraphServiceGrpc.GraphServiceImplBase {
     }
 
     @Override
-    public void getGraphLibrary(Empty request,
-                                StreamObserver<GetGraphLibraryResponse> responseObserver) {
-        getGraphLibraryOperation
-                .activate()
+    public void getAllGraphs(GetAllGraphsRequest request,
+                             StreamObserver<GetAllGraphsResponse> responseObserver) {
+        getAllGraphsOperation
+                .activate(request)
+                .subscribe(
+                        responseObserver::onNext,
+                        responseObserver::onError,
+                        responseObserver::onCompleted
+                );
+
+    }
+
+    @Override
+    public void getGraphsByIds(GraphIds request,
+                               StreamObserver<GetGraphsByIdsResponse> responseObserver) {
+        getGraphsByIdsOperation
+                .activate(request)
                 .subscribe(
                         responseObserver::onNext,
                         responseObserver::onError,
