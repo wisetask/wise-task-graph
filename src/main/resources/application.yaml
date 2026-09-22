@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: wise-task-graph
+  threads:
+    virtual:
+      enabled: true
+  mongodb:
+    host: ${MONGO_DB:wise-task-mongo}
+    port: ${MONGO_PORT:27017}
+    database: ${GRAPH_DB:wise_task_graph}
+    representation:
+      uuid: standard
+  grpc:
+    server:
+      port: ${GRAPH_GRPC_PORT:6565}
+
+logging:
+  level:
+    ru.leti.wise.task.graph: ${LOGGING_LEVEL:INFO}
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://${TEMPO_HOST:localhost}:${TEMPO_PORT:4318}/v1/traces
+  otlp:
+    metrics:
+      export:
+        enabled: false # prometheus will do it
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true

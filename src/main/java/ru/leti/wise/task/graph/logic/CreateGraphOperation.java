@@ -21,10 +21,13 @@ public class CreateGraphOperation {
 
     public Mono<CreateGraphResponse> activate(GraphGrpc.CreateGraphRequest request) {
         GraphOuterClass.Graph graph = request.getGraph();
-        log.info("Mapped gRPC input: isNamed={}, name={}", graph.getIsNamed(), graph.getName());
         Graph baseGraph = graphMapper.graphRequestToGraph(graph);
-        log.info("Mapped gRPC input: isNamed={}, name={}", baseGraph.getIsNamed(), baseGraph.getName());
+        log.info("Creating graph: id={}, authorId={}, name={}, named={}, vertices={}, edges={}",
+                graph.getId(), graph.getAuthorId(), graph.getName(), graph.getIsNamed(),
+                graph.getVertexListCount(), graph.getEdgeListCount());
         return graphRepository.save(baseGraph)
+                .doOnNext(saved -> log.info("Graph saved: id={}, name={}, named={}",
+                        saved.getId(), saved.getName(), saved.getIsNamed()))
                 .map((__) -> CreateGraphResponse
                         .newBuilder()
                         .setGraph(graph)
