@@ -52,7 +52,7 @@ public class GenerateRandomGraphOperation {
                         .commonGraphToGraphResponse(generateGraph(
                                 request.getVertexCount(),
                                 request.getEdgeCount(),
-                                request.getIsDirect()), randomUUID()))
+                                request.getIsDirect()), randomUUID(), request.getAuthorId()))
                 .build();
     }
 

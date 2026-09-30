@@ -28,6 +28,7 @@ public class CreateGraphOperation {
         return graphRepository.save(baseGraph)
                 .doOnNext(saved -> log.info("Graph saved: id={}, name={}, named={}",
                         saved.getId(), saved.getName(), saved.getIsNamed()))
+                .doOnError(err -> log.error("Graph saving exception happened", err))
                 .map((__) -> CreateGraphResponse
                         .newBuilder()
                         .setGraph(graph)

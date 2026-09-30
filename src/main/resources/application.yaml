@@ -5,7 +5,7 @@ spring:
     virtual:
       enabled: true
   mongodb:
-    host: ${MONGO_DB:wise-task-mongo}
+    host: ${MONGO_DB:localhost}
     port: ${MONGO_PORT:27017}
     database: ${GRAPH_DB:wise_task_graph}
     representation:
@@ -16,7 +16,7 @@ spring:
 
 logging:
   level:
-    ru.leti.wise.task.graph: ${LOGGING_LEVEL:INFO}
+    ru.leti.wise.task.graph: ${LOGGING_LEVEL:DEBUG}
 
 management:
   tracing:
