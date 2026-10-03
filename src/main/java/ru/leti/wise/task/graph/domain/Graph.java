@@ -12,8 +12,8 @@ import java.util.UUID;
 public class Graph {
 
     @Id
-    private UUID id;
-    private UUID authorId;
+    private String id;
+    private String authorId;
 
     private int vertexCount;
     private int edgeCount;
