@@ -68,8 +68,6 @@ public class GetAllGraphsOperation {
             criteria.add(Criteria.where("vertexCount").is(filter.getVertexCount()));
         if (filter.getEdgeCount() > 0)
             criteria.add(Criteria.where("edgeCount").is(filter.getEdgeCount()));
-        // is_direct и is_named не помечены в proto как optional,
-        // поэтому false трактуется как "фильтр не задан"
         if (filter.getIsDirect())
             criteria.add(Criteria.where("isDirect").is(true));
         if (filter.getIsNamed())

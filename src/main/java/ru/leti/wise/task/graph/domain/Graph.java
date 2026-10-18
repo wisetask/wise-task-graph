@@ -12,7 +12,7 @@ import java.util.UUID;
 public class Graph {
 
     @Id
-    private String id;
+    private UUID id;
     private String authorId;
 
     private int vertexCount;

@@ -28,6 +28,7 @@ public interface GraphMapper {
 
     @Mapping(target = "vertexList", source = "vertexListList")
     @Mapping(target = "edgeList", source = "edgeListList")
+    @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())")
     Graph graphRequestToGraph(GraphOuterClass.Graph graph);
 
     List<GraphOuterClass.Graph> toGraphs(List<Graph> graphs);

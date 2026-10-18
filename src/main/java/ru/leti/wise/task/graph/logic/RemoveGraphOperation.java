@@ -20,7 +20,7 @@ public class RemoveGraphOperation {
         var graphId = UUID.fromString(removeGraphRequest.getId());
         log.info("Removing graph: id={}", graphId);
         return graphRepository.deleteById(graphId)
-                .doOnSuccess(__ -> log.info("Graph removed: id={}", graphId))
+                .doOnSuccess(_ -> log.info("Graph removed: id={}", graphId))
                 .thenReturn(GraphGrpc.RemoveGraphResponse.newBuilder().setId(removeGraphRequest.getId()).build());
     }
 }
