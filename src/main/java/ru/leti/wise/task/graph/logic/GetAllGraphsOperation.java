@@ -26,12 +26,16 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class GetAllGraphsOperation {
 
+    private static final int DEFAULT_PAGE_SIZE = 20;
+
     private final ReactiveMongoTemplate mongoTemplate;
     private final GraphMapper graphMapper;
 
     public Mono<GetAllGraphsResponse> activate(GraphGrpc.GetAllGraphsRequest request) {
         var paginationRequest = request.getPagination();
-        var pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getPageSize());
+        var pageable = PageRequest.of(
+                Math.max(paginationRequest.getPage(), 0),
+                paginationRequest.getPageSize() > 0 ? paginationRequest.getPageSize() : DEFAULT_PAGE_SIZE);
         log.debug("Fetching graphs: page={}, pageSize={}", pageable.getPageNumber(), pageable.getPageSize());
 
         return mongoTemplate.find(buildQuery(request.getFilter()).with(pageable), Graph.class)
