@@ -18,7 +18,6 @@ import ru.leti.wise.task.pagination.Pagination;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -65,9 +64,9 @@ public class GetAllGraphsOperation {
     private Query buildQuery(GraphGrpc.GraphFilter filter) {
         List<Criteria> criteria = new ArrayList<>();
         if (!filter.getId().isBlank())
-            criteria.add(Criteria.where("id").is(UUID.fromString(filter.getId())));
+            criteria.add(Criteria.where("id").is(filter.getId()));
         if (!filter.getAuthorId().isBlank())
-            criteria.add(Criteria.where("authorId").is(UUID.fromString(filter.getAuthorId())));
+            criteria.add(Criteria.where("authorId").is(filter.getAuthorId()));
         if (filter.getVertexCount() > 0)
             criteria.add(Criteria.where("vertexCount").is(filter.getVertexCount()));
         if (filter.getEdgeCount() > 0)

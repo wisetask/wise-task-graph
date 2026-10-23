@@ -7,8 +7,6 @@ import reactor.core.publisher.Mono;
 import ru.leti.wise.task.graph.GraphGrpc;
 import ru.leti.wise.task.graph.repository.GraphRepository;
 
-import java.util.UUID;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -17,7 +15,7 @@ public class RemoveGraphOperation {
     private final GraphRepository graphRepository;
 
     public Mono<GraphGrpc.RemoveGraphResponse> activate(GraphGrpc.RemoveGraphRequest removeGraphRequest) {
-        var graphId = UUID.fromString(removeGraphRequest.getId());
+        var graphId = removeGraphRequest.getId();
         log.info("Removing graph: id={}", graphId);
         return graphRepository.deleteById(graphId)
                 .doOnSuccess(_ -> log.info("Graph removed: id={}", graphId))

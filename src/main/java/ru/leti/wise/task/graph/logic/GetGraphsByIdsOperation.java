@@ -9,8 +9,6 @@ import ru.leti.wise.task.graph.GraphGrpc.GraphIds;
 import ru.leti.wise.task.graph.mapper.GraphMapper;
 import ru.leti.wise.task.graph.repository.GraphRepository;
 
-import java.util.UUID;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class GetGraphsByIdsOperation {
         var ids = request.getGraphIdsList()
                 .stream()
                 .filter(id -> !id.isBlank())
-                .map(UUID::fromString)
+                .distinct()
                 .toList();
         log.debug("Fetching graphs by ids: requested={}, uniqueIds={}",
                 request.getGraphIdsList().size(), ids.size());
