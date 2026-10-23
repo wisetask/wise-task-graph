@@ -36,15 +36,21 @@ public class GenerateRandomGraphOperation {
         log.debug("Generating random graph: vertexCount={}, edgeCount={}, isDirect={}, isSaved={}",
                 request.getVertexCount(), request.getEdgeCount(), request.getIsDirect(), request.getIsSaved());
         var graph = generateGraphResponse(request);
-        return request.getIsSaved()
-                ? graphRepository.save(graphMapper.graphRequestToGraph(graph.getGraph()))
+        if (!request.getIsSaved()) {
+            log.debug("Random graph generated (not saved): id={}", graph.getGraph().getId());
+            return Mono.just(graph);
+        }
+        return graphRepository.save(graphMapper.graphRequestToGraph(graph.getGraph()))
                 .doOnNext(saved -> log.info("Random graph saved: id={}, vertices={}, edges={}, isDirect={}",
                         saved.getId(), saved.getVertexCount(), saved.getEdgeCount(), saved.getIsDirect()))
-                .map((__) -> graph)
-                : Mono.just(graph)
-                .doOnSuccess(generated -> log.debug("Random graph generated (not saved): id={}",
-                        generated.getGraph().getId()));
+                .map(saved -> {
+                    var responseGraph = graph.getGraph().toBuilder()
+                            .setId(saved.getId().toString())
+                            .build();
+                    return graph.toBuilder().setGraph(responseGraph).build();
+                });
     }
+
 
     private GenerateGraphResponse generateGraphResponse(GenerateGraphRequest request) {
         return GenerateGraphResponse.newBuilder()

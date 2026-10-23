@@ -11,8 +11,6 @@ import ru.leti.wise.task.graph.domain.Graph;
 import ru.leti.wise.task.graph.mapper.GraphMapper;
 import ru.leti.wise.task.graph.repository.GraphRepository;
 
-import java.util.UUID;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,7 +20,7 @@ public class GetGraphByIdOperation {
     private final GraphRepository graphRepository;
 
     public Mono<GetGraphByIdResponse> activate(GraphGrpc.GetGraphByIdRequest request) {
-        var graphId = UUID.fromString(request.getId());
+        var graphId = request.getId();
         log.debug("Fetching graph: id={}", graphId);
         return graphRepository.findById(graphId)
                 .doOnNext(graph -> log.debug("Graph found: id={}, name={}, named={}, vertices={}, edges={}",
@@ -32,7 +30,7 @@ public class GetGraphByIdOperation {
                 .switchIfEmpty(Mono.defer(() -> Mono.error(graphNotFound(graphId))));
     }
 
-    private RuntimeException graphNotFound(UUID graphId) {
+    private RuntimeException graphNotFound(String graphId) {
         log.warn("Graph not found: id={}", graphId);
         return Status.NOT_FOUND
                 .withDescription("Граф с id '%s' не найден".formatted(graphId))

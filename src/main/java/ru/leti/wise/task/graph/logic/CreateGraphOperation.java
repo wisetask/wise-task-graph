@@ -21,6 +21,7 @@ public class CreateGraphOperation {
 
     public Mono<CreateGraphResponse> activate(GraphGrpc.CreateGraphRequest request) {
         GraphOuterClass.Graph graph = request.getGraph();
+
         Graph baseGraph = graphMapper.graphRequestToGraph(graph);
         log.info("Creating graph: id={}, authorId={}, name={}, named={}, vertices={}, edges={}",
                 graph.getId(), graph.getAuthorId(), graph.getName(), graph.getIsNamed(),
@@ -29,9 +30,9 @@ public class CreateGraphOperation {
                 .doOnNext(saved -> log.info("Graph saved: id={}, name={}, named={}",
                         saved.getId(), saved.getName(), saved.getIsNamed()))
                 .doOnError(err -> log.error("Graph saving exception happened", err))
-                .map((__) -> CreateGraphResponse
+                .map((saved) -> CreateGraphResponse
                         .newBuilder()
-                        .setGraph(graph)
+                        .setGraph(graphMapper.graphToGraphResponse(saved))
                         .build());
     }
 }

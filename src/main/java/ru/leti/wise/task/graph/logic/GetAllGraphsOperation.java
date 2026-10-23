@@ -18,7 +18,6 @@ import ru.leti.wise.task.pagination.Pagination;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -26,12 +25,16 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class GetAllGraphsOperation {
 
+    private static final int DEFAULT_PAGE_SIZE = 20;
+
     private final ReactiveMongoTemplate mongoTemplate;
     private final GraphMapper graphMapper;
 
     public Mono<GetAllGraphsResponse> activate(GraphGrpc.GetAllGraphsRequest request) {
         var paginationRequest = request.getPagination();
-        var pageable = PageRequest.of(paginationRequest.getPage(), paginationRequest.getPageSize());
+        var pageable = PageRequest.of(
+                Math.max(paginationRequest.getPage(), 0),
+                paginationRequest.getPageSize() > 0 ? paginationRequest.getPageSize() : DEFAULT_PAGE_SIZE);
         log.debug("Fetching graphs: page={}, pageSize={}", pageable.getPageNumber(), pageable.getPageSize());
 
         return mongoTemplate.find(buildQuery(request.getFilter()).with(pageable), Graph.class)
@@ -61,15 +64,13 @@ public class GetAllGraphsOperation {
     private Query buildQuery(GraphGrpc.GraphFilter filter) {
         List<Criteria> criteria = new ArrayList<>();
         if (!filter.getId().isBlank())
-            criteria.add(Criteria.where("id").is(UUID.fromString(filter.getId())));
+            criteria.add(Criteria.where("id").is(filter.getId()));
         if (!filter.getAuthorId().isBlank())
-            criteria.add(Criteria.where("authorId").is(UUID.fromString(filter.getAuthorId())));
+            criteria.add(Criteria.where("authorId").is(filter.getAuthorId()));
         if (filter.getVertexCount() > 0)
             criteria.add(Criteria.where("vertexCount").is(filter.getVertexCount()));
         if (filter.getEdgeCount() > 0)
             criteria.add(Criteria.where("edgeCount").is(filter.getEdgeCount()));
-        // is_direct и is_named не помечены в proto как optional,
-        // поэтому false трактуется как "фильтр не задан"
         if (filter.getIsDirect())
             criteria.add(Criteria.where("isDirect").is(true));
         if (filter.getIsNamed())
