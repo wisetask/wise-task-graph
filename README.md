@@ -18,7 +18,6 @@ Edge:   source, target, weight, label, color
 Color:  GRAY | RED | BLUE | GREEN
 ```
 
-Важно: `id` и `authorId` хранятся строками в каноническом формате UUID. Исторически часть документов была записана с legacy-типом Binary — если после восстановления из старого бэкапа `getAllGraphs` падает с `ConverterNotFoundException`, документы нужно привести к строковым `id`.
 
 ## gRPC API (порт 6565)
 
